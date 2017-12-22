@@ -229,11 +229,29 @@ int i = 42;
 int main()
 {
     int i = 100;
-    int j = i;
+    int j = i;  // j: 100
 }
 ```
+>A better example as the following
+```cpp
+#include <iostream>
 
-`100`, since the global `i` was hidden by the local `i`.
+int i = 50;
+int main(){
+  int i = 100;
+  std::cout << "i in main(): " << i << std::endl;
+  std::cout << "i in global scope: " << ::i << std::endl;
+  return 0;
+}
+```
+```
+the main()'s i: 100
+the global scope' i: 50
+```
+
+We can reused the same identifier in a function scope, which has been used in the global scope. The reused identifier `i` in `main()` has it's own scope(life cycle). 
+
+The global scope `i` is visible in the `main()`.
 
 ## Exercise 2.14
 >Is the following program legal? If so, what values are printed?
@@ -246,9 +264,57 @@ int main()
 
 Legal. Output:
 
-```100 45```
+```
+100
+45
+```
 
-Note: Such naming is considered as bad practise. 
+The `for` statement does have a scope. In this scope, we reused the identifier `i` for a variable's definition(declaration and initialization); resued the identifier `sum` for a variable's initialization. In addition, this `i` is a different entity by comparing it with the `i` in the first line. All the 3 `sum` are the same entity.
+
+# 2.3.1 Reference
+
+A reference is not an object. Instead, a reference is just another name for an already existing object.
+
+A reference has to be initialized.
+
+```
+int ival = 1024;
+int &refVal = ival; // refVal refers to (is another name for) ival
+int &refVal2;       // error: a reference must be initialized
+```
+
+A reference must be initialized by a object wit the same type, not a literal.
+
+```
+int i;
+int &refI = i;       // ok
+int &refVal4 = 10;   // error: initializer must be an object
+double dval = 3.14;
+int &refVal5 = dval; // error: initializer must be an int object
+```
+
+When we use a reference as an initializer, we are really using the object to which the reference is bound.
+
+```
+int i = 1;
+int &refI = i;
+int &refII = refI;
+```
+
+Once initialized, a reference remains bound to its initial object. There is no way to rebind a reference to refer to a different object. Because there is no way to rebind a reference, references must be initialized.
+
+```
+int i = 1;
+int &refI = i;
+int ii = 2;
+refI = ii;
+std::cout << i << std::endl;
+```
+
+```
+2
+```
+
 
 ## Exercise 2.15
 >Which of the following definitions, if any, are invalid? Why?
@@ -267,7 +333,9 @@ Note: Such naming is considered as bad practise.
 ## Exercise 2.16
 >Which, if any, of the following assignments are invalid? If they are valid, explain what they do.
 
-    int i = 0, &r1 = i; double d = 0, &r2 = d;
+```
+int i = 0, &r1 = i; double d = 0, &r2 = d;
+```
 - (a) r2 = 3.14159;
 - (b) r2 = r1;
 - (c) i = r2;
@@ -288,7 +356,94 @@ i = 5; ri = 10;
 std::cout << i << " " << ri << std::endl;
 ```
 
-`10 10`
+```
+10 10
+```
+
+# 2.3.2 pointers
+
+declare a `int` type pointer
+
+```
+int *p;
+```
+
+A pointer holds the address of another object. We get the address of an object by using the address-of operator (the & operator):
+
+initialize a `int` pointer, through a object's address
+
+```
+int i = 0;
+int *p = &i;
+```
+
+```
+int i = 0;
+int *p;
+p = &i;
+```
+
+initialize a `int` pointer, through a pointer
+
+```
+int i = 1;
+int *p = &i;
+int *pp;
+pp = p;
+```
+
+When a pointer points to an object, we can use the dereference operator (the * operator) to access that object:
+
+read object through pointer
+
+```
+int i = 0;
+int *p = &i;
+std::cout << *p << std::endl;
+```
+
+update object through pointer
+
+```
+int i = 0;
+int *p = &i;
+*p = 2;
+```
+
+QUESTION: Because references are not objects, they don’t have addresses. Hence, we may not define a pointer to a reference.
+
+```
+int i = 1;
+int &refI = i;
+int *pointerI = &refI;
+*pointerI = 2;         // i is 2;
+```
+
+QUESTION: Comparison between `Pointer` and `Reference`. 
+
+Some symbols, such as & and *, are used as both an operator in an expression and as part of a declaration. The context in which a symbol is used determines what the symbol means:
+
+```
+int i = 42;
+int &r = i;   // & follows a type and is part of a declaration; r is a reference
+int *p;       // * follows a type and is part of a declaration; p is a pointer
+p = &i;       // & is used in an expression as the address-of operator
+*p = i;       // * is used in an expression as the dereference operator
+int &r2 = *p; // & is part of the declaration; * is the dereference operator
+```
+
+Initialize all Pointers
+
+```
+int *p1 = nullptr; // equivalent to int *p1 = 0; c++ 11
+int *p2 = 0;       // directly initializes p2 from the literal constant 0
+int *p3 = NULL;    // equivalent to int *p3 = 0; must #include cstdlib
+```
+
+
+
+
+
 
 ## Exercise 2.18
 >Write code to change the value of a pointer. Write code to
